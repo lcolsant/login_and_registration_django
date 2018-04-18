@@ -7,6 +7,10 @@ from .models import UserManager
 import bcrypt
 
 def index(request):
+    # if messages in request.session:
+    #     request.session.pop(messages, None)
+    # if request.session['id'] in request.session:
+    #     return redirect('/success')
     return render(request,'login/index.html')
 
 def register(request):
@@ -16,7 +20,6 @@ def register(request):
         print 'Invalid input'
         return redirect('/')
     else:
-
         #hash password and add to db
         hash_password = bcrypt.hashpw(request.POST['pass'].encode(), bcrypt.gensalt())
         print hash_password
@@ -25,19 +28,33 @@ def register(request):
     return redirect('/')
 
 def login(request):
-    return HttpResponse('hit login route')
+    email = request.POST['email']
+    password = request.POST['pass']
+    #user = User.objects.get(email=email)        ###why does this not work? errors out on line 32
+    user = User.objects.filter(email=email)
+    if len(user) == 0:
+        messages.error(request,"User not recognized")
+        return redirect('/')
+    else:
+        if ( bcrypt.checkpw(password.encode(), user[0].password.encode()) ):
+            print 'password matches'
+            messages.success(request,'User logged in')
+            request.session['id'] = user[0].id
+            return redirect('/success')
+        else:
+            messages.error(request,'Invalid password.')
+            return redirect('/')
 
-# Create your views here.
 
-
-#@app.route('/success')
 def success(request):
-    #query = "SELECT * FROM users WHERE id=:one"
     context = {
-        'user':User.objects.get(id=id)
+        'user':User.objects.get(id=request.session['id'])
     }
-    #logged_user = mysql.query_db(query,data)[0]
-    # return logged_user['first_name']
-
     
-    return render(request, '/login/success.html',context)
+    return render(request, 'login/success.html',context)
+
+
+#@app.route('/logout')
+def logout(request):
+    request.session.clear()
+    return redirect('/')

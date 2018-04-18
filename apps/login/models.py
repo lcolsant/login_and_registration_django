@@ -11,30 +11,35 @@ class UserManager(models.Manager):
     def validate(self, request):
         errors = False
         ###########################################################
-        # add validate code here
-        if len(request.post['fname']) < 2:
+        # validations here
+        if len(request.POST['fname']) < 2:
             messages.error(request,'First name must be at least 2 characters!')
             errors = True  
-        if not request.post['fname'].isalpha():
+        if not request.POST['fname'].isalpha():
             messages.error(request,"First name should be alpha only")
             errors = True
-        if len(request.post['lname']) < 2:
+        if len(request.POST['lname']) < 2:
             messages.error(request,'Last name must be at least 2 characters!')
             errors = True
-        if not request.post['lname'].isalpha():
+        if not request.POST['lname'].isalpha():
             messages.error(request,"Last name should be alpha only")
             errors = True
-        if len(request.post['email']) < 1:
+        if len(request.POST['email']) < 1:
             messages.error(request,'Email cannot be empty!')
             errors = True
-        if not EMAIL_REGEX.match(request.post['email']):
+        if not EMAIL_REGEX.match(request.POST['email']):
             messages.error(request,'Invalid Email Address!')
             errors = True
-        if len(request.post['pass']) < 8:
+        if len(request.POST['pass']) < 8:
             messages.error(request,'Password should be at least 8 characters!')
             errors = True
-        if request.post['pass'] != request.post['pass_confirm']:
+        if request.POST['pass'] != request.POST['pass_confirm']:
             messages.error(request,'Password does not match password confirmation')
+            errors = True
+        #validate that email doesn't already exist in database
+        user = User.objects.filter(email=request.POST['email'])
+        if len(user) != 0:
+            messages.error(request,"This email has already been registered")
             errors = True
 
         return errors
