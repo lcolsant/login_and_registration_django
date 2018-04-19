@@ -7,10 +7,10 @@ from .models import UserManager
 import bcrypt
 
 def index(request):
-    # if messages in request.session:
-    #     request.session.pop(messages, None)
-    # if request.session['id'] in request.session:
-    #     return redirect('/success')
+  
+    if 'id' in request.session.keys():
+        return redirect('/success')
+    
     return render(request,'login/index.html')
 
 def register(request):
@@ -24,13 +24,11 @@ def register(request):
         hash_password = bcrypt.hashpw(request.POST['pass'].encode(), bcrypt.gensalt())
         print hash_password
         User.objects.create(first_name=request.POST['fname'],last_name=request.POST['lname'],email=request.POST['email'],password=hash_password)
-        messages.success(request, "Registered successfully. Please login")
-    return redirect('/')
+    return redirect('/success')
 
 def login(request):
     email = request.POST['email']
     password = request.POST['pass']
-    #user = User.objects.get(email=email)        ###why does this not work? errors out on line 32
     user = User.objects.filter(email=email)
     if len(user) == 0:
         messages.error(request,"User not recognized")
@@ -54,7 +52,6 @@ def success(request):
     return render(request, 'login/success.html',context)
 
 
-#@app.route('/logout')
 def logout(request):
     request.session.clear()
     return redirect('/')

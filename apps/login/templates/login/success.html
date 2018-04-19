@@ -10,15 +10,9 @@
     <p>User_Last Name: {{ user.last_name }}</p>
     <p>User_Email: {{ user.email }}</p>
 
-    <!-- <form action="message" method="POST">
-        {% csrf_token %}
-        <textarea name="message" id="message" cols="100" rows="10" placeholder="Post a message"></textarea>
-        <input type="submit" value="Post Message" >
-    </form> -->
-
     <form action="/logout">
-    {% csrf_token %}
-    <input type="submit" value="Logout">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
     </form>
 </body>
 </html>

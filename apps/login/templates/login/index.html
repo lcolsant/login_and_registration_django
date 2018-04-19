@@ -20,12 +20,5 @@
       <p><label for="pass">Password:<input type="password" name="pass" id="pass"></label></p>
       <p><input type="submit" value="Submit"></p>
     </form>
-    {% if messages %}
-      <ul class="messages">
-      {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
   </body>
 </html>
