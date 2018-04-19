@@ -24,6 +24,8 @@ def register(request):
         hash_password = bcrypt.hashpw(request.POST['pass'].encode(), bcrypt.gensalt())
         print hash_password
         User.objects.create(first_name=request.POST['fname'],last_name=request.POST['lname'],email=request.POST['email'],password=hash_password)
+        user = User.objects.filter(email=request.POST['email'])
+        request.session['id'] = user[0].id
     return redirect('/success')
 
 def login(request):
@@ -36,7 +38,6 @@ def login(request):
     else:
         if ( bcrypt.checkpw(password.encode(), user[0].password.encode()) ):
             print 'password matches'
-            messages.success(request,'User logged in')
             request.session['id'] = user[0].id
             return redirect('/success')
         else:
